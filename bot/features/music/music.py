@@ -28,6 +28,8 @@ class Music(TGACog):
         self.search_pattern = ""
         self.local_library = {}
         self.inital_lock = True
+        self.repeat_song = False
+        self.repeat_all = False
 
         # Load Music Feature CONFIG
         REQUIRED_PARAMS = ['local_path', 'audio_types', 'search_frequency']
@@ -97,7 +99,12 @@ class Music(TGACog):
             self.voice_client.stop()
 
     def _finished_song(self):
-        self.curr_song += 1
+
+        if self.repeat_all:
+            if self.curr_song == len(self.curr_queue) - 1:
+                self.curr_song = 0
+        elif not self.repeat_song:
+            self.curr_song += 1
         self._play_next()
 
     async def _check_if_user_is_voice_connected(self, ctx):
@@ -296,6 +303,45 @@ class Music(TGACog):
         '''
         if self.voice_client.is_paused():
             self.voice_client.resume()
+
+    @music.command(aliases=['rp'])
+    @TGACog.check_permissions()
+    async def repeat(self, ctx, arg=None):
+        """
+        Sets repeat to either the current song or the entire queue depending on submitted args.
+        """
+        CURRENT_REPEAT_OPTIONS = {
+        "song": self.repeat_song,
+        "all": self.repeat_all
+        }
+        off_on = ["off", "on"]
+
+        if arg:
+            VALID_REPEAT_ALL_ARGS = ["all", "everything", "queue"]
+            VALID_REPEAT_SONG_ARGS = ["this", "song", "current"]
+            ALL_VALID_ARGS = [*VALID_REPEAT_SONG_ARGS, *VALID_REPEAT_ALL_ARGS]
+
+            if arg.lower() not in ALL_VALID_ARGS:
+                full_message = f"Invalid repeat call: {arg}"
+            else:
+                if arg in VALID_REPEAT_SONG_ARGS:
+                    self.repeat_song = not self.repeat_song
+                    self.repeat_all = False
+                    toggle_status = off_on[self.repeat_song]
+                    full_message = f"Repeat song now toggled {toggle_status}."
+                else:
+                    self.repeat_all = not self.repeat_all
+                    self.repeat_song = False
+                    toggle_status = off_on[self.repeat_all]
+                    full_message = f"Repeat all now toggled {toggle_status}."
+        else:
+            full_message = f"Current Repeat Status:"
+            for (option_name, option_value) in CURRENT_REPEAT_OPTIONS.items():
+                toggle_status = off_on[option_value]
+                status_message = f"\n{option_name} - {off_on[option_value]}"
+                full_message += status_message
+
+        await ctx.message.channel.send(f"```{full_message}```")
 
     @music.command(aliases=['cs', 'curr'])
     @TGACog.check_permissions()
