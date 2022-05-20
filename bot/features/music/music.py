@@ -6,6 +6,7 @@ import audio_metadata
 import threading
 from time import sleep
 import pathlib
+from math import log
 from discord.ext import commands
 from bot.features.tgacog import TGACog
 
@@ -340,23 +341,21 @@ class Music(TGACog):
         Where <args> is an integer between 0 and 100
         '''
         if self.voice_client and self.voice_client.is_connected():
-            if not args:
-                current_volume = int(self.voice_client.source.volume * 1000)
-                await ctx.message.channel.send(f"Volume currently @ {current_volume}")
-            else:
-                try:
-                    my_volume = int(args)
-                    if my_volume >= 0 and my_volume <= 100:
-                        # Divide by 1000 because even at volume 1, it was always far too loud
-                        self.voice_client.source.volume = self.curr_volume = my_volume / 1000
-                    else:
-                        raise Exception(ValueError)
-                except ValueError:
-                    await ctx.message.channel.send(
-                        "For volume please enter a value between 0 and 100.")
-                except Exception as e:
-                    await ctx.message.channel.send(f"An unknown error occured: {e}"
-                                                )
+            try:
+                my_volume = int(args)
+                if my_volume >= 0 and my_volume <= 100:
+                    # Base 101 logarithm for volume and add one, so we always
+                    # evaluate at least log(101, 1) since 0 is -infinity
+                    self.voice_client.source.volume = self.curr_volume = 1 - \
+                        log(101 - my_volume, 101)
+                else:
+                    raise ValueError
+            except ValueError:
+                await ctx.message.channel.send(
+                    "For volume please enter a value between 0 and 100.")
+            except Exception as e:
+                await ctx.message.channel.send(f"An unknown error occured: {e}"
+                                               )
         else:
             await ctx.message.channel.send(
                 "Bot is not connected to a voice channel.")
