@@ -3,21 +3,22 @@
 # The Galaxy Aces Discord Bot
 
 ## Table of Contents
-- [Installation](#installation)
-  - [Linux](#linux-install)
-  - [Windows](#windows-install)
-    - [Notes for Windows users](#notes-for-windows-users)
-- [Using the Bot](#using-the-bot)
-  -   [Discord interface](#discord-interface)
-  -   [Command Line Interface (CLI)](#command-line-interface-cli)
-- [Configuration](#configuration)
-  -   [Minimum Configuration](#minimum-configuration)
-  -   [Permissions](#permissions)
-  -   [Running Multiple Bots](#running-multiple-bots)
-- [Appendix](#appendix)
-  -   [Core Bot Parameters](#core-bot-parameters)
-  -   [Music Feature](#music-feature)
-  -   [Shared Feature Parameters](#shared-feature-parameters)
+
+-   [Installation](#installation)
+    -   [Linux](#linux-install)
+    -   [Windows](#windows-install)
+        -   [Notes for Windows users](#notes-for-windows-users)
+-   [Using the Bot](#using-the-bot)
+    -   [Discord interface](#discord-interface)
+    -   [Command Line Interface (CLI)](#command-line-interface-cli)
+-   [Configuration](#configuration)
+    -   [Minimum Configuration](#minimum-configuration)
+    -   [Permissions](#permissions)
+    -   [Running Multiple Bots](#running-multiple-bots)
+-   [Appendix](#appendix)
+    -   [Core Bot Parameters](#core-bot-parameters)
+    -   [Music Feature](#music-feature)
+    -   [Shared Feature Parameters](#shared-feature-parameters)
 
 ## Installation
 
@@ -120,9 +121,9 @@ You can enter help at the prompt to list all the commands and perform various ac
 
 Your config.yaml file will at minimum need:
 
-- name
-- token
-- command_prefix
+-   name
+-   token
+-   command_prefix
 
 Before it is able to run.
 
@@ -279,23 +280,23 @@ It is also recommended but not required that each bot have a unique command pref
 
 #### Core Bot Parameters
 
-|Parameter|Default Value(s)|Description|
-|---|:---:|---|
-|name|`null`|A name for the bot. It can be unique if you want, but is not required. However it will be more difficult to distingush multiple bots if you are running multiple.|
-|token|`null`|A discord developer API token. You can get one [here](https://discord.com/developers/applications)
-|command_prefix|`"!"`|A single character which you will use to preface all commands for this bot e.g. `!music` *Note: It's best to wrap your command prefix in quotes to ensure compatability*|
-|logging|`NOTSET`|The level of logging. Possible options: NOTSET, INFO, WARNING, ERROR, DEBUG
-
+| Parameter      | Default Value(s) | Description                                                                                                                                                              |
+| -------------- | :--------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| name           |      `null`      | A name for the bot. It can be unique if you want, but is not required. However it will be more difficult to distingush multiple bots if you are running multiple.        |
+| token          |      `null`      | A discord developer API token. You can get one [here](https://discord.com/developers/applications)                                                                       |
+| command_prefix |       `"!"`      | A single character which you will use to preface all commands for this bot e.g. `!music` _Note: It's best to wrap your command prefix in quotes to ensure compatability_ |
+| logging        |     `NOTSET`     | The level of logging. Possible options: NOTSET, INFO, WARNING, ERROR, DEBUG                                                                                              |
 
 #### Music Feature
-|Parameter|Default Value(s)|Description|
-|---|:---:|---|
-|local_path|`/music`|A system path pointing to a local library of music. Ideally the directory structure will be `local_path/Artists/Albums/songs` But any structure should work. The music feature will search this directory for songs which match the **audio_types** every **search_frequency** seconds.|
-|search_frequency|`300`|How frequently you want the music feature to search for new music. This value is in seconds. Default is 300 seconds (5 minutes)|
-|audio_types|`.flac` `.mp3` `.mp4` `.ogg` `.wav` `.wmv`|The different audio formats you want the music feature to search for. These audio types must be readable by ffmpeg.
+
+| Parameter        |              Default Value(s)              | Description                                                                                                                                                                                                                                                                             |
+| ---------------- | :----------------------------------------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| local_path       |                  `/music`                  | A system path pointing to a local library of music. Ideally the directory structure will be `local_path/Artists/Albums/songs` But any structure should work. The music feature will search this directory for songs which match the **audio_types** every **search_frequency** seconds. |
+| search_frequency |                    `300`                   | How frequently you want the music feature to search for new music. This value is in seconds. Default is 300 seconds (5 minutes)                                                                                                                                                         |
+| audio_types      | `.flac` `.mp3` `.mp4` `.ogg` `.wav` `.wmv` | The different audio formats you want the music feature to search for. These audio types must be readable by ffmpeg.                                                                                                                                                                     |
 
 #### Shared Feature Parameters
 
-|Parameter|Default Value(s)|Description
-|---|:---:|---|
-|permissions|`@everyone`|Permissions are setup on a command by command basis and each command can have zero or more roles associated with it. Under each command, you can add an additional role which will grant any users with that role access to use the feature. If no permissions are listed for a command, then that command will not be useable by any users. Special roles such as @everyone must be surrounded by double quotes: "@everyone"|
+| Parameter   | Default Value(s) | Description                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------- | :--------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| permissions |    `@everyone`   | Permissions are setup on a command by command basis and each command can have zero or more roles associated with it. Under each command, you can add an additional role which will grant any users with that role access to use the feature. If no permissions are listed for a command, then that command will not be useable by any users. Special roles such as @everyone must be surrounded by double quotes: "@everyone" |

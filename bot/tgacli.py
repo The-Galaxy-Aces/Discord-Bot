@@ -121,9 +121,6 @@ class TGACli:
             )
             self.list(cmd)
 
-    def invalid_cmd(self, cmd, parent):
-        print(f"{cmd} is an invalid option for {parent}.")
-
     def help(self, cmd):
         '''
         Displays this help menu.
@@ -133,3 +130,7 @@ class TGACli:
             help(self)
         else:
             help(getattr(self, cmd[0], lambda: print("Function not found")))
+
+
+def invalid_cmd(self, cmd, parent):
+    print(f"{cmd} is an invalid option for {parent}.")
