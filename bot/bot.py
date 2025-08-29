@@ -42,7 +42,7 @@ class Bot(discord.ext.commands.Bot):
         intents = discord.Intents.default()
         intents.message_content = True  # Required for reading message content
         intents.voice_states = True     # Required for music functionality
-        intents.
+        
         
         # Initialize parent class first
         super().__init__(command_prefix=self.command_prefix, intents=intents)
