@@ -24,13 +24,13 @@ class TGACog(commands.Cog):
     def get_permissions(self, bot):
         return self.CONFIG.get('permissions')
 
-    def enable_cog(self):
+    async def enable_cog(self):
         self.bot.log.debug(f"Enable Cog {self.COG_NAME}")
-        self.bot.add_cog(self)
+        await self.bot.add_cog(self)
 
-    def disable_cog(self):
+    async def disable_cog(self):
         self.bot.log.debug(f"Disable Cog {self.COG_NAME}")
-        self.bot.remove_cog(self)
+        await self.bot.remove_cog(self)
 
     @commands.Cog.listener()
     async def on_ready(self):
