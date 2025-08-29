@@ -7,6 +7,7 @@ from time import localtime, strftime
 from bot.features.insult.insult import Insult
 from bot.features.music.music import Music
 from bot.features.utility.utility import Utility
+from bot.features.chatgpt.chatgpt import ChatGPT
 
 
 class Bot(discord.ext.commands.Bot):
@@ -42,7 +43,6 @@ class Bot(discord.ext.commands.Bot):
         intents = discord.Intents.default()
         intents.message_content = True  # Required for reading message content
         intents.voice_states = True     # Required for music functionality
-        intents.
         
         # Initialize parent class first
         super().__init__(command_prefix=self.command_prefix, intents=intents)
@@ -121,7 +121,8 @@ class Bot(discord.ext.commands.Bot):
         VALID_FEATURES = {
             "insult" : Insult,
             "music" : Music,
-            "utility" : Utility
+            "utility" : Utility,
+            "chatgpt" : ChatGPT
         }
 
         print(f"{self.name} enabled features:", end="\n")

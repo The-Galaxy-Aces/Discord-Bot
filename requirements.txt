@@ -4,6 +4,9 @@
 # Discord API library with voice support
 discord.py[voice]==2.6.2
 
+# OpenAI API for ChatGPT integration
+openai>=1.54.0
+
 # Audio metadata parsing for music features
 audio-metadata==0.11.1
 
