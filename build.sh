@@ -4,7 +4,7 @@ ALPINE_BUILD_PKGS="--virtual .voice-build-deps build-base libffi-dev libsodium-d
 ALPINE_REQUIRED_PKGS="libffi libsodium opus-dev ffmpeg gcc python3 python3-dev"
 
 DEBIAN_BUILD_PKGS="build-essential libffi-dev libsodium-dev musl-dev"
-DEBIAN_REQUIRED_PKGS="libffi7 libsodium23 libopus-dev ffmpeg gcc python3 python3-dev python3-venv"
+DEBIAN_REQUIRED_PKGS="libffi8 libsodium23 libopus-dev ffmpeg gcc python3 python3-dev python3-venv"
 
 LOG_DIR="/var/log/discord_bot"
 SYSTEM=$(grep "\bID=\b" /etc/os-release | grep -v "\"" | awk -F '=' '{print $2}')

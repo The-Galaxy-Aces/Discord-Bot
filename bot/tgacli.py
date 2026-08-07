@@ -1,3 +1,4 @@
+import asyncio
 import threading
 from time import sleep
 
@@ -10,13 +11,14 @@ class TGACli:
     select <bot_id> - Selects the <bot_id> for further commands.
     help - Displays this help
     '''
-    def __init__(self, bots, OSTYPE):
+    def __init__(self, bots, OSTYPE, loop):
         '''
         Initalize TGADB CLI Interface
         '''
 
         self.OSTYPE = OSTYPE
         self.bots = bots
+        self.loop = loop
         self.active_bot = 0
         self.exit = False
         self.ready = False
@@ -43,23 +45,29 @@ class TGACli:
             3: lambda cmd: self.select(cmd)
         }
 
-        self.thread = threading.Thread(target=self.input_loop, args=())
+        self.thread = threading.Thread(target=self.input_loop,
+                                       args=(),
+                                       daemon=True)
 
         self.thread.start()
 
     def input_loop(self):
-        # Wait for the bots to be ready
-        while (not self.ready):
-            if all(
-                    all(cog.ready for cog in bot.cog_list)
-                    for bot in self.bots):
+        # Wait for the bots to be ready. Cogs are loaded asynchronously during
+        # login, so an empty cog_list means a bot has not finished starting.
+        while (not self.ready and not self.exit):
+            if all(bot.cog_list and all(cog.ready for cog in bot.cog_list)
+                   for bot in self.bots):
                 self.ready = True
             else:
                 sleep(1)
 
         while (not self.exit):
             active_bot_name = self.bots[self.active_bot].name
-            cmd = input(f"\n{active_bot_name}: >>> ")
+            try:
+                cmd = input(f"\n{active_bot_name}: >>> ")
+            except EOFError:
+                self.quit([])
+                break
             self.parse_command(cmd)
 
     def parse_command(self, cmd):
@@ -78,16 +86,17 @@ class TGACli:
         Exit the CLI Interface and shut down all running bots.
         '''
         print("Exiting")
-        for bot in self.bots:
-            bot.loop.stop()
-            bot.thread.join()
-
-            if not bot.loop.is_closed():
-                bot.loop.close()
-
-            print(f"{bot.name} shutdown.")
         self.exit = True
-        exit(0)
+
+        # The bots run on the main thread's event loop, so closing them has to
+        # be scheduled onto that loop from this one.
+        for bot in self.bots:
+            try:
+                asyncio.run_coroutine_threadsafe(bot.close(),
+                                                 self.loop).result(timeout=30)
+                print(f"{bot.name} shutdown.")
+            except Exception as e:
+                print(f"{bot.name} failed to shut down cleanly: {e}")
 
     def list(self, cmd):
         '''

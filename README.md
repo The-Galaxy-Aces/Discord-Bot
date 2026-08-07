@@ -11,6 +11,7 @@
   -   [Discord interface](#discord-interface)
   -   [Command Line Interface (CLI)](#command-line-interface-cli)
 - [Configuration](#configuration)
+  -   [Required Discord Intents](#required-discord-intents)
   -   [Minimum Configuration](#minimum-configuration)
   -   [Permissions](#permissions)
   -   [Running Multiple Bots](#running-multiple-bots)
@@ -84,7 +85,7 @@ python main.py
 
 #### Notes for Windows Users
 
-Python 3.9 for windows may give you an error such as:
+Python 3.9 or newer for windows may give you an error such as:
 
 > error Microsoft Visual C++ 14.0 is required
 
@@ -115,6 +116,17 @@ The Galaxy Aces Bot: >>>
 You can enter help at the prompt to list all the commands and perform various actions. Entering q or quit will shutdown the bot(s).
 
 ## Configuration
+
+### Required Discord Intents
+
+This bot uses prefixed commands (for example `!music`), which requires the
+privileged **Message Content Intent**. On the
+[Discord developer portal](https://discord.com/developers/applications), select
+your application, go to *Bot* -> *Privileged Gateway Intents*, and enable
+**Message Content Intent**.
+
+Without it the bot will connect and appear online, but it will never see the
+text of any message and every command will silently do nothing.
 
 ### Minimum Configuration
 

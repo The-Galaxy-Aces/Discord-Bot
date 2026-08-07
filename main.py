@@ -1,28 +1,18 @@
-import os
-import threading
 import asyncio
-import yaml
-import signal
+import os
 import sys
+
+import yaml
+
 from bot.bot import Bot
 from bot.tgacli import TGACli
 
-def main():
+CONFIG_FILE = "config.yaml"
 
-    CONFIG_FILE = "config.yaml"
+
+async def main():
+
     OSTYPE = sys.platform
-
-
-    async def threaded_bot(bot):
-        await bot.start(bot.get_token())
-
-    def loop_the_bot(loop):
-        if not loop.is_running():
-            loop.run_forever()
-
-    def signal_handler(sig,frame):
-        sys.exit(0)
-
 
     # Check for config file
     if not os.path.exists(CONFIG_FILE):
@@ -38,25 +28,21 @@ def main():
         # Use enumeration as bot's ID
         bot_config.update({'bot_id': bot_id})
 
-        bot = Bot(bot_config, OSTYPE)
-        bot.loop = asyncio.get_event_loop()
-        bot.loop.create_task(threaded_bot(bot))
-        bot.thread = threading.Thread(
-            target=loop_the_bot,
-            args=[bot.loop],
-            daemon=True
-        )
-        bot.thread.start()
+        bots.append(Bot(bot_config, OSTYPE))
 
-        # Have an array of bots to feed to CLI
-        bots.append(bot)
+    # The CLI runs in its own thread and schedules bot shutdown back onto this loop
+    TGACli(bots, OSTYPE, asyncio.get_running_loop())
 
-    # Setup the cli in its own thread
-    TGACli(bots, OSTYPE)
-
-    # Properly handle the control+c
-    signal.signal(signal.SIGINT, signal_handler)
+    try:
+        # Every bot shares this event loop, discord.py drives them concurrently
+        await asyncio.gather(*(bot.start(bot.get_token()) for bot in bots))
+    finally:
+        await asyncio.gather(*(bot.close() for bot in bots),
+                             return_exceptions=True)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
