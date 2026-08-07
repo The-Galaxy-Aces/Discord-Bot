@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import os
 import fnmatch
@@ -167,7 +168,7 @@ class Music(TGACog):
         # once immediately after the bot is started.
         while self.inital_lock:
             self.bot.log.debug("Waiting for inital_lock to unlock")
-            sleep(1)
+            await asyncio.sleep(1)
 
         new_queue = []
 
@@ -383,9 +384,9 @@ class Music(TGACog):
             # Also seems like we have to sleep for a second or so for the pausing and moving to finish
             # https://github.com/Rapptz/discord.py/issues/5904
             self.voice_client.pause()
-            sleep(1)
+            await asyncio.sleep(1)
             await self.voice_client.move_to(channel)
-            sleep(1)
+            await asyncio.sleep(1)
             self.voice_client.resume()
 
         else:

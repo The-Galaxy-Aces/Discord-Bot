@@ -24,13 +24,13 @@ class TGACog(commands.Cog):
     def get_permissions(self, bot):
         return self.CONFIG.get('permissions')
 
-    def enable_cog(self):
+    async def enable_cog(self):
         self.bot.log.debug(f"Enable Cog {self.COG_NAME}")
-        self.bot.add_cog(self)
+        await self.bot.add_cog(self)
 
-    def disable_cog(self):
+    async def disable_cog(self):
         self.bot.log.debug(f"Disable Cog {self.COG_NAME}")
-        self.bot.remove_cog(self)
+        await self.bot.remove_cog(self.qualified_name)
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -55,6 +55,9 @@ class TGACog(commands.Cog):
                     ctx.invoked_subcommand.name)
             else:
                 cmd_permissions = ctx.cog.permissions.get(ctx.command.name)
+
+            if not cmd_permissions:
+                return False
 
             return any(role for role in ctx.author.roles
                        if role.name in cmd_permissions)

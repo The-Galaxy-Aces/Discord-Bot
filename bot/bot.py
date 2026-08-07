@@ -1,6 +1,7 @@
 import os
 import logging
-import discord.ext
+import discord
+from discord.ext import commands
 from time import localtime, strftime
 
 from bot.features.insult.insult import Insult
@@ -8,7 +9,7 @@ from bot.features.music.music import Music
 from bot.features.utility.utility import Utility
 
 
-class Bot(discord.ext.commands.Bot):
+class Bot(commands.Bot):
     """
     The Bot class.
     The bot can do lots of neat things
@@ -36,19 +37,28 @@ class Bot(discord.ext.commands.Bot):
         self.logging = CONFIG.get('logging', 'NOTSET')
         self.name = CONFIG.get('name')
         self.token = CONFIG.get('token')
-        super().__init__(self.command_prefix)
+
+        # message_content is a privileged intent and must also be enabled for the
+        # bot in the Discord developer portal, otherwise prefixed commands are
+        # never received.
+        intents = discord.Intents.default()
+        intents.message_content = True
+        super().__init__(command_prefix=self.command_prefix, intents=intents)
 
         self.cog_list = []
-        self.thread = ""
-        self.loop = ""
 
         if self.logging:
             self._setup_logging()
         self.log.info(f"Logging level: {self.logging}")
 
-        self._enable_features()
-
         self.log.info(f"{self.name} initalized")
+
+    async def setup_hook(self):
+        """
+        Called by discord.py once the bot is logging in. Cogs must be added from
+        an async context because Bot.add_cog is a coroutine as of discord.py 2.0.
+        """
+        await self._enable_features()
 
     def _setup_logging(self):
         """
@@ -74,7 +84,7 @@ class Bot(discord.ext.commands.Bot):
         self.handler.setFormatter(logging.Formatter(FORMAT))
         self.log.addHandler(self.handler)
 
-    def _enable_features(self):
+    async def _enable_features(self):
         VALID_FEATURES = {
             "insult" : Insult,
             "music" : Music,
@@ -90,7 +100,7 @@ class Bot(discord.ext.commands.Bot):
             else:
                 if self.enabled_features[feature]["enabled"]:
                     cog = VALID_FEATURES[feature](self)
-                    cog.enable_cog()
+                    await cog.enable_cog()
                     self.cog_list.append(cog)
                     print(f"  {feature}", end="\n")
 

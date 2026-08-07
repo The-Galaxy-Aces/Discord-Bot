@@ -43,10 +43,11 @@ class Utility(TGACog):
     @commands.Cog.listener()
     async def on_raw_message_edit(self, payload):
 
-        # Get the edited text from the message.
+        # Get the edited text from the message. Edits which do not touch the
+        # message body (embeds, pins, reactions) carry no content at all.
         content = payload.data.get('content')
 
-        if content.strip().startswith(self.bot.command_prefix):
+        if content and content.strip().startswith(self.bot.command_prefix):
 
             args = content.lstrip(self.bot.command_prefix).split()
 
